@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Classroom Intelligence Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fc;
+            color: #1e293b;
+        }
+
+        header {
+            background: linear-gradient(135deg, #111c44, #4338ca);
+            color: white;
+            padding: 28px 5%;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #dbeafe;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            margin-bottom: 24px;
+        }
+
+        .welcome p {
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        }
+
+        .label {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .number {
+            font-size: 34px;
+            font-weight: bold;
+            margin: 14px 0;
+        }
+
+        .blue { color: #4f46e5; }
+        .green { color: #059669; }
+        .orange { color: #d97706; }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 620px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5eaf2;
+        }
+
+        th {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .present {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .absent {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 13px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #3730a3;
+        }
+
+        .analytics {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 22px;
+        }
+
+        .score-row {
+            margin: 20px 0;
+        }
+
+        .score-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .progress {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #06b6d4);
+            border-radius: 10px;
+        }
+
+        .suggestion {
+            padding: 14px;
+            background: #eef2ff;
+            border-left: 4px solid #6366f1;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .save-button {
+            background: #059669;
+            margin-top: 16px;
+        }
+
+        .save-button:hover {
+            background: #047857;
+        }
+
+        .note {
+            font-size: 12px;
+            line-height: 1.6;
+            color: #64748b;
+            margin-top: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 760px) {
+            .stats,
+            .analytics {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AI Classroom Intelligence</h1>
+    <p>Multimodal Attendance &amp; Engagement Agent</p>
+</header>
+
+<main class="container">
+
+    <section class="welcome">
+        <h2>Dashboard Overview</h2>
+        <p>Monitor classroom attendance and explore engagement data.</p>
+    </section>
+
+    <section class="stats">
+
+        <div class="card">
+            <div class="label">Total Students</div>
+            <div class="number blue">{{ total }}</div>
+            <div class="label">Students in this session</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Present Students</div>
+            <div class="number green">{{ present }}</div>
+            <div class="label">{{ attendance_rate }}% attendance rate</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Average Engagement</div>
+            <div class="number orange">{{ average }}%</div>
+            <div class="label">Illustrative demo scores</div>
+        </div>
+
+    </section>
+
+    <section class="card">
+        <h2 class="section-title">Student Attendance</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Status</th>
+                        <th>Engagement</th>
+                        <th>Session Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ s.name }}</td>
+
+                        <td>
+                            {% if s.present %}
+                                <span class="badge present">Present</span>
+                            {% else %}
+                                <span class="badge absent">Absent</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if s.present %}
+                                {{ s.engagement }}%
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>{{ s.minutes }} min</td>
+
+                        <td>
+                            <form
+                                action="{{ url_for('toggle_attendance', student_id=s.id) }}"
+                                method="post">
+
+                                <button type="submit">
+                                    Mark {{ 'Absent' if s.present else 'Present' }}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p class="note">
+            Demo student records are used. Attendance is not automatically
+            detected from a webcam in this version.
+        </p>
+    </section>
+
+    <section class="analytics">
+
+        <div class="card">
+            <h2 class="section-title">Engagement Analytics</h2>
+            <canvas
+
+            {% for s in students %}
+                {% if s.present %}
+
+                <div class="score-row">
+                    <div class="score-info">
+                        <span>{{ s.name }}</span>
+                        <strong>{{ s.engagement }}%</strong>
+                    </div>
+
+                    <div class="progress">
+                        <div
+                            class="progress-bar"
+                            style="width: {{ s.engagement }}%">
+                        </div>
+                    </div>
+                </div>
+
+                {% endif %}
+            {% endfor %}
+
+            <p class="note">
+                These scores are sample data and should not be treated
+                as definitive measurements of student attention.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Teaching Suggestions</h2>
+
+            {% for suggestion in suggestions %}
+                <div class="suggestion">
+                    {{ suggestion }}
+                </div>
+            {% endfor %}
+
+            <p class="note">
+                Suggestions are based on the demo engagement scores.
+            </p>
+        </div>
+
+    </section>
+
+    <section class="card">
+        <h2 class="section-title">Session Summary</h2>
+
+        <p>
+            Attendance:
+            <strong>{{ present }} / {{ total }}</strong>
+        </p>
+
+        <p style="margin-top: 12px;">
+            Average engagement:
+            <strong>{{ average }}%</strong>
+        </p>
+
+        <form action="{{ url_for('save_session') }}" method="post">
+            <button type="submit" class="save-button">
+                Save Session Summary
+            </button>
+        </form>
+
+        {% if saved %}
+            <p class="note" style="color: #047857;">
+                Session summary saved successfully!
+            </p>
+        {% endif %}
+
+        <p class="note">
+            Saved summaries currently exist only in server memory and
+            are lost when the application restarts.
+        </p>
+    </section>
+
+</main>
+
+<footer><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+const engagementCanvas = document.getElementById('engagementChart');
+
+new Chart(engagementCanvas, {
+    type: 'bar',
+    data: {
+        labels: [
+            {% for s in students if s.present %}
+                {{ s.name | tojson }},
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Engagement (%)',
+            data: [
+                {% for s in students if s.present %}
+                    {{ s.engagement }},
+                {% endfor %}
+            ],
+            backgroundColor: '#476de0',
+            borderRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                title: {
+                    display: true,
+                    text: 'Engagement (%)'
+                }
+            }
+        }
+    }
+});
+</script>
+ AI Classroom Intelligence | Academic Project Prototype
+</footer>
+
+</body>
+</html>
+
+
